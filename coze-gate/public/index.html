@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智能助手 · 激活</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1814;
+    --ink-soft: #6b6660;
+    --ink-faint: #b8b4b0;
+    --paper: #f7f4ef;
+    --paper-warm: #ede9e2;
+    --accent: #c8502a;
+    --accent-soft: #f0e4de;
+    --border: rgba(26,24,20,0.12);
+    --radius: 4px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Serif SC', serif;
+    background: var(--paper);
+    color: var(--ink);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1.25rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* 背景纹理 */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(26,24,20,0.04) 39px, rgba(26,24,20,0.04) 40px),
+      repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(26,24,20,0.03) 39px, rgba(26,24,20,0.03) 40px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrap {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 400px;
+    animation: rise 0.6s ease both;
+  }
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* 顶部标识 */
+  .identity {
+    text-align: center;
+    margin-bottom: 2.5rem;
+  }
+
+  .identity-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    height: 52px;
+    border: 1.5px solid var(--ink);
+    border-radius: 50%;
+    margin-bottom: 1rem;
+    position: relative;
+  }
+
+  .identity-mark svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .identity-name {
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--ink);
+    margin-bottom: 0.35rem;
+  }
+
+  .identity-desc {
+    font-size: 13px;
+    color: var(--ink-soft);
+    letter-spacing: 0.03em;
+    font-family: sans-serif;
+    font-weight: 400;
+  }
+
+  /* 分割线 */
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 2rem;
+  }
+
+  .divider::before,
+  .divider::after {
+    content: '';
+    flex: 1;
+    height: 0.5px;
+    background: var(--border);
+  }
+
+  .divider-text {
+    font-size: 11px;
+    color: var(--ink-faint);
+    letter-spacing: 0.12em;
+    font-family: sans-serif;
+  }
+
+  /* 卡片 */
+  .card {
+    background: #fff;
+    border: 0.5px solid var(--border);
+    border-radius: 2px;
+    padding: 2rem;
+    box-shadow: 0 1px 3px rgba(26,24,20,0.06), 0 8px 32px rgba(26,24,20,0.04);
+  }
+
+  .field-label {
+    display: block;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    color: var(--ink-soft);
+    font-family: sans-serif;
+    font-weight: 400;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+
+  .input-wrap {
+    position: relative;
+    margin-bottom: 1.25rem;
+  }
+
+  .key-input {
+    width: 100%;
+    height: 48px;
+    padding: 0 48px 0 14px;
+    font-family: 'DM Mono', monospace;
+    font-size: 15px;
+    letter-spacing: 0.1em;
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  .key-input:focus {
+    border-color: var(--ink);
+    background: #fff;
+  }
+
+  .key-input::placeholder {
+    color: var(--ink-faint);
+    letter-spacing: 0.05em;
+  }
+
+  .toggle-vis {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--ink-faint);
+    padding: 4px;
+    font-size: 13px;
+    font-family: sans-serif;
+    transition: color 0.15s;
+  }
+
+  .toggle-vis:hover { color: var(--ink-soft); }
+
+  .submit {
+    width: 100%;
+    height: 48px;
+    background: var(--ink);
+    color: var(--paper);
+    border: none;
+    border-radius: var(--radius);
+    font-family: 'Noto Serif SC', serif;
+    font-size: 15px;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .submit:hover { background: #2e2b27; }
+  .submit:active { transform: scale(0.99); }
+  .submit:disabled { background: var(--ink-faint); cursor: not-allowed; }
+
+  .submit-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .spinner {
+    display: none;
+    width: 16px;
+    height: 16px;
+    border: 1.5px solid rgba(247,244,239,0.3);
+    border-top-color: var(--paper);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .submit.loading .spinner { display: block; }
+  .submit.loading .submit-text::after { content: '验证中…'; }
+  .submit:not(.loading) .submit-text::after { content: '进入助手 →'; }
+
+  /* 状态提示 */
+  .status {
+    margin-top: 1rem;
+    min-height: 20px;
+    font-size: 13px;
+    text-align: center;
+    font-family: sans-serif;
+    font-weight: 400;
+    border-radius: var(--radius);
+    padding: 0;
+    transition: all 0.2s;
+  }
+
+  .status.error {
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 10px 14px;
+  }
+
+  .status.success {
+    color: #2d6a4f;
+    background: #e8f5ee;
+    padding: 10px 14px;
+  }
+
+  /* 底部提示 */
+  .footer {
+    margin-top: 1.5rem;
+    text-align: center;
+    font-size: 12px;
+    color: var(--ink-faint);
+    font-family: sans-serif;
+    line-height: 1.6;
+  }
+
+  .footer a {
+    color: var(--ink-soft);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  /* 成功遮罩 */
+  .success-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: var(--paper);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 1rem;
+    animation: fadeIn 0.4s ease;
+  }
+
+  .success-overlay.show { display: flex; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .success-icon {
+    width: 60px;
+    height: 60px;
+    border: 1.5px solid #2d6a4f;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #2d6a4f;
+    font-size: 24px;
+    animation: popIn 0.4s 0.1s both cubic-bezier(0.34,1.56,0.64,1);
+  }
+
+  @keyframes popIn {
+    from { transform: scale(0.5); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  .success-text {
+    font-size: 16px;
+    color: var(--ink);
+    letter-spacing: 0.05em;
+    animation: rise 0.4s 0.2s both;
+  }
+
+  .success-sub {
+    font-size: 13px;
+    color: var(--ink-soft);
+    font-family: sans-serif;
+    animation: rise 0.4s 0.3s both;
+  }
+
+  @media (max-width: 420px) {
+    .card { padding: 1.5rem; }
+    .identity { margin-bottom: 2rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="identity">
+    <div class="identity-mark">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
+        <path d="M8 12s1.5 2 4 2 4-2 4-2"/>
+        <path d="M9 9h.01M15 9h.01"/>
+      </svg>
+    </div>
+    <div class="identity-name">智能助手</div>
+    <div class="identity-desc">付费专属 · 一码一用</div>
+  </div>
+
+  <div class="divider">
+    <span class="divider-text">输入卡密以继续</span>
+  </div>
+
+  <div class="card">
+    <label class="field-label" for="key-input">激活码</label>
+    <div class="input-wrap">
+      <input
+        class="key-input"
+        id="key-input"
+        type="password"
+        placeholder="XXXX-XXXX-XXXX-XXXX"
+        maxlength="24"
+        autocomplete="off"
+        autocorrect="off"
+        spellcheck="false"
+      />
+      <button class="toggle-vis" id="toggle-btn" type="button" onclick="toggleVis()">显示</button>
+    </div>
+
+    <button class="submit" id="submit-btn" type="button" onclick="verify()">
+      <div class="submit-inner">
+        <div class="spinner"></div>
+        <span class="submit-text"></span>
+      </div>
+    </button>
+
+    <div class="status" id="status"></div>
+  </div>
+
+  <div class="footer">
+    卡密为一次性使用，验证即绑定。<br>
+    遇到问题？<a href="#">联系客服</a>
+  </div>
+</div>
+
+<!-- 成功遮罩 -->
+<div class="success-overlay" id="success-overlay">
+  <div class="success-icon">✓</div>
+  <div class="success-text">验证成功</div>
+  <div class="success-sub">正在为你跳转…</div>
+</div>
+
+<script>
+  function toggleVis() {
+    const inp = document.getElementById('key-input');
+    const btn = document.getElementById('toggle-btn');
+    if (inp.type === 'password') {
+      inp.type = 'text';
+      btn.textContent = '隐藏';
+    } else {
+      inp.type = 'password';
+      btn.textContent = '显示';
+    }
+  }
+
+  function setStatus(msg, type) {
+    const el = document.getElementById('status');
+    el.textContent = msg;
+    el.className = 'status ' + (type || '');
+  }
+
+  async function verify() {
+    const input = document.getElementById('key-input');
+    const btn = document.getElementById('submit-btn');
+    const key = input.value.trim();
+
+    if (!key) { setStatus('请输入卡密', 'error'); return; }
+
+    btn.disabled = true;
+    btn.classList.add('loading');
+    setStatus('');
+
+    try {
+      const res = await fetch('/api/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ key })
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        document.getElementById('success-overlay').classList.add('show');
+        setTimeout(() => {
+          window.location.href = data.redirectUrl;
+        }, 1500);
+      } else {
+        setStatus(data.message || '验证失败，请重试', 'error');
+        btn.disabled = false;
+        btn.classList.remove('loading');
+      }
+    } catch (e) {
+      setStatus('网络错误，请稍后重试', 'error');
+      btn.disabled = false;
+      btn.classList.remove('loading');
+    }
+  }
+
+  document.getElementById('key-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') verify();
+  });
+
+  // 自动格式化输入（插入横杠）
+  document.getElementById('key-input').addEventListener('input', function() {
+    if (this.type === 'password') return;
+    let v = this.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+    if (v.length > 4) v = v.slice(0,4) + '-' + v.slice(4);
+    if (v.length > 9) v = v.slice(0,9) + '-' + v.slice(9);
+    if (v.length > 14) v = v.slice(0,14) + '-' + v.slice(14);
+    this.value = v.slice(0, 19);
+  });
+</script>
+</body>
+</html>
