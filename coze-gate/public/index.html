@@ -377,7 +377,7 @@
   </div>
 
   <div class="footer">
-    卡密为一次性使用，验证即绑定。<br>
+    卡密一次激活，本设备长期有效。<br>
     遇到问题？<a href="#">联系客服</a>
   </div>
 </div>
@@ -390,6 +390,20 @@
 </div>
 
 <script>
+  const STORAGE_KEY = 'coze_verified_url';
+
+  // 页面加载时检查是否已验证过，直接跳转
+  (function checkSaved() {
+    const savedUrl = localStorage.getItem(STORAGE_KEY);
+    if (savedUrl) {
+      const overlay = document.getElementById('success-overlay');
+      const sub = overlay.querySelector('.success-sub');
+      sub.textContent = '检测到已激活，正在跳转…';
+      overlay.classList.add('show');
+      setTimeout(() => { window.location.href = savedUrl; }, 1000);
+    }
+  })();
+
   function toggleVis() {
     const inp = document.getElementById('key-input');
     const btn = document.getElementById('toggle-btn');
@@ -429,6 +443,8 @@
       const data = await res.json();
 
       if (data.success) {
+        // 保存到本地，下次打开自动跳转
+        localStorage.setItem(STORAGE_KEY, data.redirectUrl);
         document.getElementById('success-overlay').classList.add('show');
         setTimeout(() => {
           window.location.href = data.redirectUrl;
